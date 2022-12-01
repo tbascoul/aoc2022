@@ -11,31 +11,14 @@ INPUT_TXT = os.path.join(os.path.dirname(__file__), 'input.txt')
 
 
 def compute(s: str) -> int:
-    n = 0
-    for c in s.strip():
-        if c == '(':
-            n += 1
-        elif c == ')':
-            n -= 1
-        else:
-            raise AssertionError(f'unexpected: {c!r}')
-    return n
-
-
-INPUT_S = '''\
-))(((((
-'''
-EXPECTED = 3
-
-
-@pytest.mark.parametrize(
-    ('input_s', 'expected'),
-    (
-        (INPUT_S, EXPECTED),
-    ),
-)
-def test(input_s: str, expected: int) -> None:
-    assert compute(input_s) == expected
+    max_sum, current_sum = 0, 0
+    for line in s.splitlines(): 
+        try:
+            current_sum += int(line)
+        except ValueError:
+            max_sum = max(max_sum, current_sum)
+            current_sum = 0
+    return max_sum
 
 
 def main() -> int:

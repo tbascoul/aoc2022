@@ -11,14 +11,19 @@ def test_adjacent_4() -> None:
 def test_adjacent_8() -> None:
     pts = set(support.adjacent_8(1, 2))
     assert pts == {
-        (0, 1), (1, 1), (2, 1),
-        (0, 2), (2, 2),
-        (0, 3), (1, 3), (2, 3),
+        (0, 1),
+        (1, 1),
+        (2, 1),
+        (0, 2),
+        (2, 2),
+        (0, 3),
+        (1, 3),
+        (2, 3),
     }
 
 
 def test_parse_coords_int() -> None:
-    coords = support.parse_coords_int('123\n456')
+    coords = support.parse_coords_int("123\n456")
     assert coords == {
         (0, 0): 1,
         (1, 0): 2,
@@ -30,22 +35,22 @@ def test_parse_coords_int() -> None:
 
 
 def test_parse_coords_hash() -> None:
-    coords = support.parse_coords_hash(' # \n#  \n')
+    coords = support.parse_coords_hash(" # \n#  \n")
     assert coords == {(1, 0), (0, 1)}
 
 
 def test_parse_numbers_split() -> None:
-    assert support.parse_numbers_split('1 2') == [1, 2]
-    assert support.parse_numbers_split('1\n2\n') == [1, 2]
+    assert support.parse_numbers_split("1 2") == [1, 2]
+    assert support.parse_numbers_split("1\n2\n") == [1, 2]
 
 
 def test_parse_numbers_comma() -> None:
-    assert support.parse_numbers_comma('1,2,3') == [1, 2, 3]
-    assert support.parse_numbers_comma('1,2,3\n') == [1, 2, 3]
+    assert support.parse_numbers_comma("1,2,3") == [1, 2, 3]
+    assert support.parse_numbers_comma("1,2,3\n") == [1, 2, 3]
 
 
 def test_format_coords_hash() -> None:
-    assert support.format_coords_hash({(1, 0), (0, 1)}) == ' #\n# '
+    assert support.format_coords_hash({(1, 0), (0, 1)}) == " #\n# "
 
 
 def test_direction4() -> None:

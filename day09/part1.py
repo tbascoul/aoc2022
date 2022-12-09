@@ -80,7 +80,7 @@ def compute(s: str) -> int:
             if not is_touching(head, tail):
                 move_tail(head, tail)
             score[tail.x].add(tail.y)
-    return sum(sum(1 for _ in values) for values in score.values())
+    return sum(len(values) for values in score.values())
 
 
 INPUT_S = """\

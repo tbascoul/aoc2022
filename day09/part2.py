@@ -71,24 +71,24 @@ def move_tail(head: Position, tail: Position):
 
 
 def compute(s: str) -> int:
-    LEN_SNAKE = 9 
+    LEN_ROPE = 9 
     score = defaultdict(set)
-    head, tails = Position(0, 0), {i: Position(0,0) for i in range(LEN_SNAKE)} 
+    head, tails = Position(0, 0), {i: Position(0,0) for i in range(LEN_ROPE)} 
     for line in s.splitlines():
         move, n = parse_move(line)
         for _ in range(1, n + 1):
-            prev = head
             move_head(move, head)
-            for i in range(LEN_SNAKE):
-                tail = tails[i]
-                if is_touching(prev, tail):
-                    break
-                if not is_touching(head, tail):
-                    move_tail(head, tail)
-                prev = tail
-                if i == LEN_SNAKE - 1:
-                    score[tail.x].add(tail.y)
-    return sum(len(values) for values in score.values()) - 1
+            tail = tails[0]
+            if not is_touching(head, tail):
+                move_tail(head, tail)
+            for i in range(1, LEN_ROPE):
+                prev = tails[i - 1]
+                curr = tails[i]
+                if not is_touching(prev, curr):
+                    move_tail(prev, curr)
+                if i == LEN_ROPE - 1:
+                    score[curr.x].add(curr.y)
+    return sum(len(values) for values in score.values())
 
 
 INPUT_S = """\

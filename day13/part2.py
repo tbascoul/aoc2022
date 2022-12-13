@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+from functools import cmp_to_key
 from itertools import zip_longest
 import os.path
 
@@ -8,6 +9,9 @@ import pytest
 
 import support
 from typing import Iterable, Tuple, TypeVar
+
+
+INPUT_TXT = os.path.join(os.path.dirname(__file__), "input.txt")
 
 
 class InvalidPair(Exception):
@@ -29,13 +33,13 @@ def grouped(iterable: Iterable[T], n=2) -> Iterable[Tuple[T, ...]]:
     return zip(*[iter(iterable)] * n)
 
 
-INPUT_TXT = os.path.join(os.path.dirname(__file__), "input.txt")
-
 is_list = lambda x: isinstance(x, list)
 is_int = lambda x: isinstance(x, int)
 
+ListOrInt = int | list["ListOrInt"]
 
-def validate_pair(l: int | list[int], r: int | list[int]):
+
+def validate_pair(l: ListOrInt, r: ListOrInt):
     if l is None:
         raise ValidPair()
     if r is None:
@@ -59,22 +63,28 @@ def validate_pair(l: int | list[int], r: int | list[int]):
                 continue
 
 
+def compare(left: ListOrInt, right: ListOrInt) -> int:
+    for l, r in zip_longest(left, right):
+        try:
+            validate_pair(l, r)
+            return 0
+        except NextCheck:
+            continue
+        except InvalidPair:
+            return 1
+        except ValidPair:
+            return -1
+
+
 def compute(s: str) -> int:
-    inputs = [eval(line) for line in ["[[2]]", "[[6]]"] + s.splitlines() if line]
-    score = 0
-    pair_index = 1
-    for left, right in grouped(inputs, 2):
-        for l, r in zip_longest(left, right):
-            try:
-                validate_pair(l, r)
-            except NextCheck:
-                continue
-            except InvalidPair:
-                break
-            except ValidPair:
-                score += pair_index
-                break
-        pair_index += 1
+    stops = ["[[2]]", "[[6]]"]
+    eval_stops = [[[2]], [[6]]]
+    inputs = [eval(line) for line in stops + s.splitlines() if line]
+    inputs.sort(key=cmp_to_key(compare))
+    score = 1
+    for i, input in enumerate(inputs):
+        if input in eval_stops:
+            score *= i + 1
     return score
 
 
@@ -103,7 +113,7 @@ INPUT_S = """\
 [1,[2,[3,[4,[5,6,7]]]],8,9]
 [1,[2,[3,[4,[5,6,0]]]],8,9]
 """
-EXPECTED = 13
+EXPECTED = 140
 
 
 @pytest.mark.parametrize(

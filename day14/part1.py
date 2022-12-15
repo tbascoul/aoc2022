@@ -12,7 +12,7 @@ import itertools
 
 INPUT_TXT = os.path.join(os.path.dirname(__file__), "input.txt")
 
-Blocks = dict[int, set[tuple[int, bool]]]
+Blocks = dict[int, set[int]]
 
 
 def pairwise(iterable):
@@ -46,40 +46,38 @@ def compute(s: str) -> int:
 
     # note all blocks positions
     for line in s.splitlines():
-        tmp = []
+        pairs = []
         for position in line.split(" -> "):
             x, y = position.split(",")
             x, y = int(x), int(y)
             max_level = max(max_level, y)
-            tmp.append((x, y))
-        for p1, p2 in pairwise(tmp):
-            if p1[0] == p2[0]:
-                y1, y2 = p1[1], p2[1]
+            pairs.append((x, y))
+        for p1, p2 in pairwise(pairs):
+            x1, x2, y1, y2 = p1[0], p2[0], p1[1], p2[1]
+            if x1 == x2:
                 if y1 < y2:
                     while y1 <= y2:
-                        blocks[p1[0]].add(y1)
+                        blocks[x1].add(y1)
                         y1 += 1
                 else:
                     while y1 >= y2:
-                        blocks[p1[0]].add(y2)
+                        blocks[x1].add(y2)
                         y2 += 1
             else:
-                x1, x2 = p1[0], p2[0]
                 if x1 < x2:
                     while x1 <= x2:
-                        blocks[x1].add(p1[1])
+                        blocks[x1].add(y1)
                         x1 += 1
                 else:
                     while x1 >= x2:
-                        blocks[x2].add(p1[1])
+                        blocks[x2].add(y1)
                         x2 += 1
 
     score = 0
-    start_x, start_y = (500, 1)
     # let start sand drop
     while True:
         try:
-            move_sand(start_x, start_y, blocks)
+            move_sand(500, 0, blocks)
         except ValueError:
             break
         score += 1
